@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ThemeKey {
+  MIDNIGHT
+  OCEAN
+  SUNSET
+  PAPER
+  NOIR_GOLD
+  AURORA
+  ROSE_MARBLE
+  OBSIDIAN
+}
+
+enum ProfileLayout {
+  CENTERED
+  SPLIT
+  EDITORIAL
+}
+
+enum FontStyle {
+  SANS
+  SERIF
+  MONO
+}
+
+enum TextAlign {
+  LEFT
+  CENTER
+  RIGHT
+}
+
+enum LinkKind {
+  INSTAGRAM
+  LINKEDIN
+  YOUTUBE
+  TWITTER
+  CUSTOM
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String
+  role         Role        @default(USER)
+  status       UserStatus  @default(PENDING)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  profile      Profile?
+}
+
+model Profile {
+  id                 String        @id @default(cuid())
+  userId             String        @unique
+  username           String?       @unique
+  displayName        String?
+  bio                String?       @db.Text
+  photoObjectKey     String?
+  themeKey           ThemeKey      @default(MIDNIGHT)
+  layout             ProfileLayout @default(CENTERED)
+  fontStyle          FontStyle     @default(SANS)
+  textAlign          TextAlign     @default(LEFT)
+  backgroundObjectKey String?
+  contactCardEnabled Boolean       @default(false)
+  contactEmail       String?
+  contactPhone       String?
+  contactCompany     String?
+  contactTitle       String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links              ProfileLink[]
+}
+
+model ProfileLink {
+  id         String    @id @default(cuid())
+  profileId  String
+  kind       LinkKind
+  label      String?
+  url        String
+  orderIndex Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  profile    Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, orderIndex])
+}
