@@ -1,5 +1,6 @@
 import {
   DeleteObjectCommand,
+  GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -54,11 +55,25 @@ export async function deletePublicImage(key?: string | null) {
   );
 }
 
+export async function getPublicObjectDownload(key: string) {
+  const result = await storageClient.send(
+    new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    }),
+  );
+
+  return {
+    body: result.Body,
+    contentType: result.ContentType,
+  };
+}
+
 export function getPublicAssetUrl(key?: string | null) {
   if (!key) {
     return null;
   }
 
-  const base = process.env.MINIO_PUBLIC_URL ?? `${endpoint}/${bucket}`;
-  return `${base.replace(/\/$/, "")}/${key}`;
+  // Proxy through Next.js to avoid unreachable internal URLs
+  return `/api/assets/${key}`;
 }
