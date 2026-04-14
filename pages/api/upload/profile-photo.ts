@@ -76,16 +76,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: "Image must be 3MB or smaller." });
   }
 
+  const uploadType = req.query.type === "background" ? "background" as const : "avatar" as const;
+
   const currentProfile = await prisma.profile.findUnique({
     where: {
       userId: session.user.id,
     },
     select: {
       photoObjectKey: true,
+      backgroundObjectKey: true,
     },
   });
 
-  const key = buildObjectKey(session.user.id, file.originalFilename ?? "upload.jpg");
+  const key = buildObjectKey(session.user.id, file.originalFilename ?? "upload.jpg", uploadType);
   const buffer = await readFile(file.filepath);
 
   await uploadPublicImage({
@@ -94,9 +97,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     key,
   });
 
-  if (currentProfile?.photoObjectKey) {
-    await deletePublicImage(currentProfile.photoObjectKey);
-  }
+  const isBackground = uploadType === "background";
+  const previousKey = isBackground
+    ? currentProfile?.backgroundObjectKey
+    : currentProfile?.photoObjectKey;
 
   await prisma.profile.upsert({
     where: {
@@ -104,12 +108,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
     create: {
       userId: session.user.id,
-      photoObjectKey: key,
+      ...(isBackground ? { backgroundObjectKey: key } : { photoObjectKey: key }),
     },
-    update: {
-      photoObjectKey: key,
-    },
+    update: isBackground ? { backgroundObjectKey: key } : { photoObjectKey: key },
   });
+
+  if (previousKey) {
+    await deletePublicImage(previousKey).catch(() => {});
+  }
 
   await unlink(file.filepath).catch(() => {});
 

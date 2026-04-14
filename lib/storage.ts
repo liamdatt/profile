@@ -20,10 +20,10 @@ export const storageClient = new S3Client({
   },
 });
 
-export function buildObjectKey(userId: string, filename: string) {
+export function buildObjectKey(userId: string, filename: string, type: "avatar" | "background" = "avatar") {
   const extension = filename.split(".").pop()?.toLowerCase() || "jpg";
   const safeExtension = extension.replace(/[^a-z0-9]/g, "") || "jpg";
-  return `profiles/${userId}/avatar-${Date.now()}.${safeExtension}`;
+  return `profiles/${userId}/${type}-${Date.now()}.${safeExtension}`;
 }
 
 export async function uploadPublicImage(input: {

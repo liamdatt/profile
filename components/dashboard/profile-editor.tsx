@@ -256,7 +256,7 @@ export function ProfileEditor({ initialProfile, userEmail }: ProfileEditorProps)
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("/api/upload/profile-photo", {
+    const response = await fetch("/api/upload/profile-photo?type=background", {
       method: "POST",
       body: formData,
     });

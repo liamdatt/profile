@@ -4,6 +4,7 @@ import { Globe, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { FontStyle, LinkKind, ProfileLayout, TextAlign, ThemeKey } from "@prisma/client";
 import { getThemeVars, getThemeBackground } from "@/lib/themes";
 import { getFontFamily } from "@/lib/profile-shared";
+import { ProfilePhoto } from "@/components/profile/profile-photo";
 
 type ProfileLinkView = {
   id?: string;
@@ -145,13 +146,11 @@ export function PublicProfileView({ profile, badge }: PublicProfileViewProps) {
             <div className="relative">
               <div className="relative h-28 w-28 overflow-hidden rounded-full border-[3px] border-[var(--profile-accent)] shadow-[0_0_30px_var(--profile-accent-glow,rgba(105,226,255,0.2))] animate-pulse-glow">
                 {profile.photoUrl ? (
-                  <Image
+                  <ProfilePhoto
                     src={profile.photoUrl}
                     alt={profile.displayName}
-                    fill
-                    className="object-cover"
+                    initials={initials}
                     sizes="112px"
-                    unoptimized
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-[var(--profile-accent-soft)] text-3xl font-semibold text-[var(--profile-accent)]">
@@ -195,13 +194,11 @@ export function PublicProfileView({ profile, badge }: PublicProfileViewProps) {
               <div className="shrink-0">
                 <div className="relative h-24 w-24 overflow-hidden rounded-[1.5rem] border-[3px] border-[var(--profile-accent)] shadow-[0_0_30px_var(--profile-accent-glow,rgba(105,226,255,0.2))]">
                   {profile.photoUrl ? (
-                    <Image
+                    <ProfilePhoto
                       src={profile.photoUrl}
                       alt={profile.displayName}
-                      fill
-                      className="object-cover"
+                      initials={initials}
                       sizes="96px"
-                      unoptimized
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-[var(--profile-accent-soft)] text-2xl font-semibold text-[var(--profile-accent)]">
@@ -245,13 +242,11 @@ export function PublicProfileView({ profile, badge }: PublicProfileViewProps) {
             <div className="relative -mt-20 sm:-mt-24">
               <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-[var(--profile-card)] shadow-[0_0_40px_var(--profile-accent-glow,rgba(105,226,255,0.15))] ring-2 ring-[var(--profile-accent)]">
                 {profile.photoUrl ? (
-                  <Image
+                  <ProfilePhoto
                     src={profile.photoUrl}
                     alt={profile.displayName}
-                    fill
-                    className="object-cover"
+                    initials={initials}
                     sizes="128px"
-                    unoptimized
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-[var(--profile-accent-soft)] text-4xl font-semibold text-[var(--profile-accent)]">
